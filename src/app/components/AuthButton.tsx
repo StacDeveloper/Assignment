@@ -57,10 +57,10 @@ const AuthButton: React.FC<{ user: User | null }> = ({ user }) => {
         return (
             <button
             onClick={handleSignIn}
-            className='flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm'
+            className='flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-br from-blue-500 to-violet-600 hover:from-blue-800 hover:to-violet-800 rounded-lg hover:bg-blue-700 transition-colors'
             >   
+            <Image src={"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/960px-Google_Favicon_2025.svg.png"} height={30} width={30} alt='Google_Image'/> Sign in with Google
             <LogIn className='w-4 h-4'/>
-            Sign in with Google
             </button>
         )
     }

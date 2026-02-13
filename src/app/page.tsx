@@ -7,6 +7,7 @@ import { User } from '@supabase/supabase-js'
 import BookmarkForm from './components/BookmarkForm'
 import BookmarkList from './components/BookmarkList'
 import { Toaster } from 'react-hot-toast'
+import Image from 'next/image'
 
 export default function HomePage() {
   const [data, Setdata] = useState<User | null>(null)
@@ -67,9 +68,11 @@ export default function HomePage() {
                 <Bookmark className='w-8 h-8 text-blue-600' />
               </div>
               <h2 className='text-2xl font-bold text-gray-900 mb-3'>Welcome to Smart Bookmarks</h2>
-              <p>Your personal bookmark manager with real-time sync. Sign in with Google to get started</p>
+              <p className='text-gray-500'>Your personal bookmark manager with real-time sync. Sign in with Google to get started</p>
             </div>
+            <div className='flex mx-auto mt-4 ml-24 lg:ml-30 md:ml-25 sm:ml-24  transition transition-all'>
             <AuthButton user={null} />
+            </div>
           </div>
         )}
       </div>

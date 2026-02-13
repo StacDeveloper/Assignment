@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   images:{
-    domains:['lh3.googleusercontent.com']
+    domains:['lh3.googleusercontent.com',"upload.wikimedia.org"]
   }
 };
 

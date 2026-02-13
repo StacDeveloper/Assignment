@@ -1,6 +1,6 @@
 "use client"
 import { Plus, X } from 'lucide-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from "react"
 import toast from 'react-hot-toast'
 import { supabase } from '../configs/supabase'
@@ -12,6 +12,22 @@ const BookmarkForm: React.FC<{ userId: string }> = ({ userId }) => {
     const [title, SetTitle] = useState<string>("")
     const [loading, SetLoading] = useState<boolean>(false)
 
+    const fetchBookMarks = async () => {
+        SetLoading(true)
+        try {
+            const { data, error } = await supabase.from("bookmarks").select("*").eq("user_id", userId).order("created_at", { ascending: false })
+            if (error) console.log(error)
+
+            console.log(data)
+        } catch (error: any) {
+            console.log(error)
+            toast.error(error)
+        } finally {
+            SetLoading(false)
+        }
+    }
+
+    
     const handleSubmit = async (e: React.SubmitEvent) => {
         console.log("handlesubmit")
         e.preventDefault()
@@ -27,9 +43,11 @@ const BookmarkForm: React.FC<{ userId: string }> = ({ userId }) => {
                 }
             ])
             if (error) console.log(error)
+            fetchBookMarks()
             SetUrl("")
             SetTitle("")
             setisOpen(false)
+            
         } catch (error: any) {
             console.log(error)
             toast.error(error)
@@ -37,6 +55,7 @@ const BookmarkForm: React.FC<{ userId: string }> = ({ userId }) => {
             SetLoading(false)
         }
     }
+
 
     if (!isOpen) {
         return (

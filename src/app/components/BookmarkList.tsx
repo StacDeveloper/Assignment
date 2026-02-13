@@ -7,8 +7,7 @@ import { supabase } from '../configs/supabase'
 import { Calendar, ExternalLink, Trash2Icon } from 'lucide-react'
 import Link from 'next/link'
 
-
-interface bookmark {
+ interface bookmark {
     id: string
     title: string
     url: string
@@ -25,6 +24,7 @@ const BookmarkList: React.FC<{ userId: string }> = (
     const [loading, SetLoading] = useState<boolean>(false)
 
     const fetchBookMarks = async () => {
+        SetLoading(true)
         try {
             const { data, error } = await supabase.from("bookmarks").select("*").eq("user_id", userId).order("created_at", { ascending: false })
             console.log(data)
@@ -39,14 +39,11 @@ const BookmarkList: React.FC<{ userId: string }> = (
     }
 
 
-
-
-
     useEffect(() => {
         fetchBookMarks()
         const channel: RealtimeChannel = supabase.channel("bookmarks-changes").on(
             'postgres_changes', {
-            event: "*",
+            event: '*',
             schema: "public",
             table: "bookmarks",
             filter: `user_id=eq.${userId}`,
@@ -59,11 +56,9 @@ const BookmarkList: React.FC<{ userId: string }> = (
                 SetBookMarks((current) => current.map((bk) => bk.id === payload.new.id ? (payload.new as bookmark) : bk))
             }
         }
-        ).subscribe((status) => console.log(status))
-
+        ).subscribe()
         return () => {
             supabase.removeChannel(channel)
-
         }
     }, [userId])
 
@@ -72,6 +67,7 @@ const BookmarkList: React.FC<{ userId: string }> = (
         try {
             const { error } = await supabase.from('bookmarks').delete().eq("id", id)
             if (error) console.log(error)
+            fetchBookMarks()
             toast.success("Deleted Bookmark")
         } catch (error: any) {
             console.log(error)

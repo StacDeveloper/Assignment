@@ -1,5 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import WebSocket from "ws";
 
 export async function createClient() {
     const cookieStore = await cookies()
@@ -29,3 +31,5 @@ export async function createClient() {
         }
     )
 }
+
+
