@@ -5,24 +5,44 @@ import { Bookmark } from 'lucide-react'
 import AuthButton from './components/AuthButton'
 import { User } from '@supabase/supabase-js'
 import BookmarkForm from './components/BookmarkForm'
-import BookmarkList from './components/BookmarkList'
-import { Toaster } from 'react-hot-toast'
-import Image from 'next/image'
+import BookmarkList  from './components/BookmarkList'
+import toast, { Toaster } from 'react-hot-toast'
+
 
 export default function HomePage() {
-  const [data, Setdata] = useState<User | null>(null)
-
+  const [user, Setuser] = useState<User | null>(null)
+  const [loading, SetLoading] = useState<boolean>(false)
+  const [bookmark, setbookmark] = useState<any[]>([])
   useEffect(() => {
     async function getUser() {
       const { data: { user } } = await supabase.auth.getUser()
-      Setdata(user)
+      Setuser(user)
     }
     getUser()
   }, [])
 
+  const fetchBookMarks = async () => {
+    SetLoading(true)
+    try {
+      const { data, error } = await supabase.from("bookmarks").select("*").eq("user_id", user?.id).order("created_at", { ascending: false })
+      if (error) console.log(error)
+      setbookmark(data as any)
+      console.log(user)
+    } catch (error: any) {
+      console.log(error)
+      toast.error(error)
+    } finally {
+      SetLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchBookMarks()
+  }, [])
+
   return (
     <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100'>
-      <Toaster/>
+      <Toaster />
       {/* Header */}
       <header className='bg-white shadow-sm border-b border-gray-200'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4'>
@@ -33,31 +53,32 @@ export default function HomePage() {
               </div>
               <h1 className='text-2xl font-bold text-gray-900'>Smart Bookmarks</h1>
             </div>
-            {data && (
-              <AuthButton user={data} />
+            {user && (
+              <AuthButton user={user} />
             )}
 
           </div>
         </div>
       </header>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-        {data ? (
+        {user ? (
           // Welcome Section
           <div className='space-y-6'>
             <div className='bg-white rounded-lg shadow-md p-6 border border-gray-200'>
               <h2 className='text-xl font-semibold text-gray-900 mb-2'>
-                Welcome back, {data.user_metadata.full_name || 'there'}! 👋
+                Welcome back, {user.user_metadata.full_name || 'there'}! 👋
               </h2>
               <p className='text-gray-600'>
                 Manage your personal bookmarks collection. All bookmarks are private to your account.
               </p>
             </div>
             {/* Bookmark Section */}
-            <BookmarkForm userId={data.id} />
+            <BookmarkForm userId={user.id} />
             <div>
               <h2 className='text-lg font-semibold text-gray-900 mb-4'>
                 Your Bookmarks
-                <BookmarkList userId={data.id} />
+                <BookmarkList userId={user.id} />
+                
               </h2>
             </div>
           </div>
@@ -71,7 +92,7 @@ export default function HomePage() {
               <p className='text-gray-500'>Your personal bookmark manager with real-time sync. Sign in with Google to get started</p>
             </div>
             <div className='flex mx-auto mt-4 ml-24 lg:ml-30 md:ml-25 sm:ml-24  transition transition-all'>
-            <AuthButton user={null} />
+              <AuthButton user={null} />
             </div>
           </div>
         )}
